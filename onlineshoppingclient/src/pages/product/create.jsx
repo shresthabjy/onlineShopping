@@ -1,89 +1,63 @@
 import React, { useState } from "react";
+import ProductForm from "./productForm";
+import { productService } from "../../services/productService";
+import { initialProductState } from "./productModel";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function Create() {
-
-  const [product, setProduct] = useState({
-    productName: "",
-    price: "",
-  });
-
+  const [product, setProduct] = useState(initialProductState);
+  const [error, setError] = useState("");
   const handleChange = (e) => {
-
     const { name, value } = e.target;
-
-    setProduct({
-      ...product,
+    setProduct((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
+  //for toasting message
+  const navigate = useNavigate();
 
   const createProduct = async () => {
+    try {
+      await productService.create(product);
+      toast.success("product created successfully");
+      navigate("/product");
 
-    await fetch("https://localhost:44317/api/ProductApi", {
-
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify(product),
-
-    });
-
-    alert("Product Added");
+    } catch (error) {
+      setError(error.message);
+      toast.error(error.message);
+    }
   };
-
-  const handleSubmit = (e) => {
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    createProduct();
+    if (product.ProductName.trim().length < 3) {
+      setError("product name must be at least 3 characters");
+      return;
+    }
+    setError("");
+    await createCategory();
   };
+  const resetForm = () => {
+
+    setCategory(initialProductState);
+
+    setError("");
+  };
+
 
   return (
-
-     <div className="flex-1 transition-all duration-300 bg-[#F3F5F7] px-3 h-full overflow-hidden">
-      <div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] h-full p-6 shadow-sm flex flex-col items-center">
-      <div className="p-5 w-full">
-
-    <h1 className="text-2xl font-bold mb-5">
-      Add Product
-    </h1>
-
-    <form onSubmit={handleSubmit}>
-
-<label>Enter your name:
-        <input
-        type="text"
-        name="productName"
-        placeholder="Product Name"
-        value={product.productName}
-        onChange={handleChange}
-      />
-      </label>
-      
-
-      <input
-        type="number"
-        name="price"
-        placeholder="Price"
-        value={product.price}
-        onChange={handleChange}
-      />
-
-      <button type="submit">
-        Save
-      </button>
-
-    </form>
-
-    </div>
-      </div>
-    </div>
-
-    
+    <ProductForm
+      title="Add New product"
+      description="Create a new product to organize your products."
+      breadcrumb="Dashboard / Product / Add product"
+      product={product}
+      error={error}
+      handleChange={handleChange}
+      handleSubmit={handleSubmit}
+      submitText="Save product"
+      cancelAction={resetForm}
+    />
   );
 }
-
 export default Create;

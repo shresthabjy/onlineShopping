@@ -8,7 +8,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   const navItems = [
     { title: 'Home', icon: Home, path: '/', hasDropdown: false },
     { title: 'Category', icon: ListCheck, path: '/category',hasDropdown: false },
-    { title: 'Product', icon: ListCheck, path: '/products',hasDropdown: false },
+    { title: 'Product', icon: ListCheck, path: '/product',hasDropdown: false },
     { 
       title: 'Profile', 
       icon: User,

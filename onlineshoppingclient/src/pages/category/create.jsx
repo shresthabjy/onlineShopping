@@ -1,97 +1,63 @@
 import React, { useState } from "react";
+import CategoryForm from "./categoryForm";
+import { categoryService } from "../../services/categoryService";
+import { initialCategoryState } from "./categoryModel";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function Create() {
-
-  const [category, setCategory] = useState({
-  categoryId: 0,
-  categoryName: "",
-  isActive: false,
-  isDelete: false
-});
-
+  const [category, setCategory] = useState(initialCategoryState);
+  const [error, setError] = useState("");
   const handleChange = (e) => {
-
     const { name, value } = e.target;
-
-    setCategory({
-      ...category,
+    setCategory((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
+  //for toasting message
+  const navigate = useNavigate();
 
   const createCategory = async () => {
+    try {
+      await categoryService.create(category);
+      toast.success("Category created successfully");
+      navigate("/category");
 
-    await fetch("https://localhost:44317/api/categoryapi", {
-
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify(category),
-
-    });
-
-    alert("Category Added");
+    } catch (error) {
+      setError(error.message);
+      toast.error(error.message);
+    }
   };
-
-  const handleSubmit = (e) => {
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    createCategory();
+    if (category.categoryName.trim().length < 3) {
+      setError("Category name must be at least 3 characters");
+      return;
+    }
+    setError("");
+    await createCategory();
   };
+  const resetForm = () => {
+
+    setCategory(initialCategoryState);
+
+    setError("");
+  };
+
 
   return (
-
-     <div className="flex-1 transition-all duration-300 bg-[#F3F5F7] px-3 h-full overflow-hidden">
-      <div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] h-full p-6 shadow-sm flex flex-col items-center">
-      <div className="p-5 w-full">
-
-    <h1 className="text-2xl font-bold mb-5">
-      Add Category Checkwd
-    </h1>
-
-    <form onSubmit={handleSubmit}>
-
-<label>Enter your name:
-        <input
-        type="text"
-        name="categoryName"
-        placeholder="Category Name"
-        value={category.categoryName}
-        onChange={handleChange}
-      />
-      </label>
-      <br></br>
-<label>
-  Is Active:
-
-  <input
-    type="checkbox"
-    name="isActive"
-    checked={category.isActive}
-    onChange={(e) =>
-      setCategory({
-        ...category,
-        isActive: e.target.checked
-      })
-    }
-  />
-</label>
-      <button type="submit">
-        Save
-      </button>
-
-    </form>
-
-    </div>
-      </div>
-    </div>
-
-    
+    <CategoryForm
+      title="Add New Category"
+      description="Create a new category to organize your products."
+      breadcrumb="Dashboard / Categories / Add Category"
+      category={category}
+      error={error}
+      handleChange={handleChange}
+      handleSubmit={handleSubmit}
+      submitText="Save Category"
+      cancelAction={resetForm}
+    />
   );
 }
-
 export default Create;

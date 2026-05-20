@@ -22,15 +22,37 @@ namespace WebApi.Controllers
         private Populator populator = new Populator();
        
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDetail>>> Get()
+            public async Task<ActionResult> Get()
+
         {
+            var products = from p in _unitOfWork
+                   .GetRepositoryInstance<ProductDetail>()
+                   .GetAllRecordsIQueryable()
 
-            var result = await Task.FromResult(new ProductViewModelLst
+                           join c in _unitOfWork
+                               .GetRepositoryInstance<CategoryDetail>()
+                               .GetAllRecordsIQueryable()
+
+                           on p.CategoryId equals c.CategoryId
+
+                           where p.IsDelete == false
+
+                           select new
+                           {
+                               p.ProductId,
+                               p.ProductName,
+                               p.CategoryId,
+                               CategoryName = c.CategoryName,
+                               p.Quantity,
+                               p.Price,
+                               p.IsActive
+                           };
+
+            /*var result = await Task.FromResult(new ProductViewModelLst
             {
-                dbModelLst = _unitOfWork.GetRepositoryInstance<ProductDetail>().GetAllRecordsIQueryable().Where(i => i.IsDelete == false).ToList()
-            }) ;
-            return result.dbModelLst.ToList();
-
+                dbModelLst = _unitOfWork.GetRepositoryInstance<products>().GetAllRecordsIQueryable().Where(i => i.IsDelete == false).ToList()
+            }) ;*/
+             return Ok(products.ToList());
         }
 
         /// <summary>

@@ -1,115 +1,91 @@
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { initialCategoryState } from "./categoryModel";
+import CategoryForm from "./categoryForm";
+import { toast } from "react-toastify";
 
 function Edit() {
+  const navigate = useNavigate();
+  //getting id from edit button
+  const { id } = useParams();
+  //setting db attribute default 
+  const [category, setCategory] = useState(initialCategoryState);
 
+  //getting/saving data of category
+  useEffect(() => {
+    fetchCategory();
+  }, []);
+  const [error, setError] = useState("");
 
-const { id } = useParams();
+  //getting data of category from api
+  const fetchCategory = async () => {
 
-const [category, setCategory] = useState({
-  categoryId: 0,
-  categoryName: "",
-  isActive: false,
-  isDelete: false
-});
+    const response = await fetch(
+      `https://localhost:44317/api/categoryapi/${id}`
+    );
 
+    const data = await response.json();
 
-useEffect(() => {
-  fetchCategory();
-}, []);
+    setCategory(data);
+  };
 
-const fetchCategory = async () => {
+  //
+  const handleChange = (e) => {
 
-  const response = await fetch(
-    `https://localhost:44317/api/categoryapi/${id}`
-  );
-
-  const data = await response.json();
-
-  setCategory(data);
-};
-const handleChange = (e) => {
-
-  const { name, value, type, checked } = e.target;
-
-  setCategory({
-    ...category,
-    [name]: type === "checkbox" ? checked : value
-  });
-};
-
-const handleSubmit = (e) => {
-
-  e.preventDefault();
-
-  updateCategory();
-};
-
-const updateCategory = async () => {
-
-  await fetch(
-    `https://localhost:44317/api/categoryapi/${id}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(category)
-    }
-  );
-
-  alert("Updated");
-};
-
-return (
-
-     <div className="flex-1 transition-all duration-300 bg-[#F3F5F7] px-3 h-full overflow-hidden">
-      <div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] h-full p-6 shadow-sm flex flex-col items-center">
-      <div className="p-5 w-full">
-
-    <h1 className="text-2xl font-bold mb-5">
-      Add Category Checkwd
-    </h1>
-
-    <form onSubmit={updateCategory}>
-
-<label>Enter your name:
-        <input
-  type="text"
-  name="categoryName"
-  value={category.categoryName}
-  onChange={handleChange}
-/>
-      </label>
-      <br></br>
-<label>
-  Is Active:
-
-  <input
-  type="checkbox"
-  checked={category.isActive}
-  onChange={(e) =>
+    const { name, value, type, checked } = e.target;
     setCategory({
       ...category,
-      isActive: e.target.checked
-    })
-  }
-/>
-</label>
-      <br></br>
+      [name]: type === "checkbox" ? checked : value
+    });
+  };
 
-      <button type="submit">
-        Update
-      </button>
+  const handleSubmit = (e) => {
 
-    </form>
+    e.preventDefault();
+    if (category.categoryName.trim().length < 3) {
+      setError("Category name must be at least 3 characters");
+      return;
+    }
+    setError("");
+    updateCategory();
+  };
 
-    </div>
-      </div>
-    </div>
+  const updateCategory = async () => {
+    const response = await fetch(
+      `https://localhost:44317/api/categoryapi/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(category)
+      }
+    );
 
-    
+    if (!response.ok) {
+
+      const errorMessage = await response.text();
+
+      setError(errorMessage);
+      return;
+    }
+    toast.success("Updated successfully");
+    navigate("/category");
+  };
+
+  return (
+    <CategoryForm
+      title="Update Category"
+      description="Edit category to organize your products."
+      breadcrumb="Dashboard / Categories / Edit Category"
+      category={category}
+      error={error}
+      handleChange={handleChange}
+      handleSubmit={handleSubmit}
+      submitText="Update Category"
+      cancelAction={() => navigate("/category")}
+    />
   );
 }
-
 export default Edit;

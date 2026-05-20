@@ -4,15 +4,13 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Sidebar from "./components/sidebar";
 
-import Products from "./pages/product/products";
-import CreateProduct from "./pages/product/create";
-
-
 import Category from "./pages/category/index";
 import CategoryCreate from "./pages/category/create";
 import CategoryEdit from "./pages/category/edit";
 
-
+import Product from "./pages/product/index";
+import ProductCreate from "./pages/product/create";
+import ProductEdit from "./pages/product/edit";
 
 
 function App() {
@@ -30,8 +28,9 @@ function App() {
         <Route path="/category/create" element={<CategoryCreate />} />
         <Route path="/category/edit/:id" element={<CategoryEdit />} />
         
-        <Route path="/Products" element={<Products />} />
-        <Route path="/product/create" element={<CreateProduct />} />
+        <Route path="/product" element={<Product />} />
+        <Route path="/product/create" element={<ProductCreate />} />
+        <Route path="/product/edit/:id" element={<ProductEdit />} />
 
       </Routes>
       </div>

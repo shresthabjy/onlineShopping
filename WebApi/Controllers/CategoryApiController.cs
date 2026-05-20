@@ -1,4 +1,5 @@
-﻿using Amazon.SimpleDB.Model;
+﻿using Amazon.AWSSupport.Model;
+using Amazon.SimpleDB.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -59,6 +60,21 @@ namespace WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<CategoryDetail> Create(CategoryDetail item)
         {
+            var exists = _unitOfWork
+        .GetRepositoryInstance<CategoryDetail>()
+        .GetAllRecords()
+        .Any(x => x.CategoryName == item.CategoryName);
+            if (exists)
+            {
+                return BadRequest("Category name already exists");
+            }
+
+            if (item.CategoryName.Length < 3)
+            {
+                return BadRequest();
+            }
+
+
             item.IsActive = true;
             item.IsDelete = false;
             _unitOfWork.GetRepositoryInstance<CategoryDetail>().Add(item);
@@ -73,7 +89,16 @@ namespace WebApi.Controllers
         public async Task<IActionResult> PutTodoItem(int id, CategoryDetail todoItem)
         {
             eCommerceEntities _context = new eCommerceEntities();
-
+            var exists = _unitOfWork
+        .GetRepositoryInstance<CategoryDetail>()
+        .GetAllRecords()
+        .Any(x =>
+        x.CategoryName == todoItem.CategoryName &&
+        x.CategoryId != todoItem.CategoryId);
+            if (exists)
+            {
+                return BadRequest("Category name already exists");
+            }
             if (id != todoItem.CategoryId)
             {
                 return BadRequest();
@@ -99,7 +124,6 @@ namespace WebApi.Controllers
 
             return NoContent();
         }
-
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
@@ -110,15 +134,11 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-
             _context.Category.Remove(todo);
             _context.SaveChanges();
-
             //return NoContent();
             return Ok(todo);
-
         }
-
 
         // GET: api/ProductItem/5
         [HttpGet("{id}")]

@@ -62,10 +62,6 @@ namespace WebApi.Controllers
             item.IsActive = true;
             item.IsDelete = false;
             _unitOfWork.GetRepositoryInstance<CategoryDetail>().Add(item);
-
-            //return CreatedAtRoute("GetProduct", new { id = item.CategoryId}, item);
-            //_unitOfWork.SaveChanges();
-
             return Ok(item);
         }
 

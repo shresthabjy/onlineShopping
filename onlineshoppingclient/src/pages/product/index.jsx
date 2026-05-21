@@ -54,6 +54,11 @@ function Product() {
       sortable: true,
     },
     {
+      name: <span style={{ fontWeight: 'bold' }} className="font-bold text-lg ">Feature</span>,
+      selector: row => row.productFeature,
+      sortable: true,
+    },
+    {
       name: '',
       cell: (row) => <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(row.categoryId)}>Edit</button>,
       ignoreRowClick: true,

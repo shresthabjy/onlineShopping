@@ -48,10 +48,10 @@ function Edit() {
       return;
     }
     setError("");
-    updateCategory();
+    updateProduct();
   };
 
-  const updateCategory = async () => {
+  const updateProduct = async () => {
     const response = await fetch(
       `https://localhost:44317/api/categoryapi/${id}`,
       {
@@ -71,15 +71,15 @@ function Edit() {
       return;
     }
     toast.success("Updated successfully");
-    navigate("/category");
+    navigate("/product");
   };
 
   return (
     <ProductForm
       title="Update Product"
-      description="Edit category to organize your products."
+      description="Edit product to organize your products."
       breadcrumb="Dashboard / Categories / Edit Category"
-      category={product}
+      product={product}
       error={error}
       handleChange={handleChange}
       handleSubmit={handleSubmit}

@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProductForm from "./productForm";
 import { productService } from "../../services/productService";
+import { categoryService } from "../../services/categoryService";
+import { productFeatureService } from "../../services/productFeatureService";
 import { initialProductState } from "./productModel";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { AlertOctagon } from "lucide-react";
 
 function Create() {
-  const [product, setProduct] = useState(initialProductState);
+  const [product, setProduct] = useState(initialProductState)
+  const [category, setCategory] = useState([]);;
+  const [productFeature, setProductFeature] = useState([]);;
   const [error, setError] = useState("");
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,6 +23,26 @@ function Create() {
   //for toasting message
   const navigate = useNavigate();
 
+
+  // for getting category
+  useEffect(() => {
+    loadCategory();
+  }, []);
+
+  const loadCategory = async () => {
+    const data = await categoryService.getAll();
+    setCategory(data);
+  };
+
+  // for getting productFeature
+  useEffect(() => {
+    loadProductFeature();
+  }, []);
+
+  const loadProductFeature = async () => {
+    const data = await productFeatureService.getAll();
+    setProductFeature(data);
+  };
   const createProduct = async () => {
     try {
       await productService.create(product);
@@ -31,18 +56,36 @@ function Create() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (product.ProductName.trim().length < 3) {
-      setError("product name must be at least 3 characters");
-      return;
-    }
-    setError("");
-    await createCategory();
+    
+    const formData = new FormData();
+    formData.append("ProductName", product.ProductName);
+    formData.append("CategoryId", product.CategoryId);
+    formData.append("Quantity", product.Quantity);
+    formData.append("Price", product.Price);
+    formData.append("ProductFeatureId", product.ProductFeatureId);
+    formData.append("IsActive", product.IsActive);
+    formData.append("Description", product.Description);
+    formData.append("image", product.image);
+    await fetch(
+      "https://localhost:44317/api/productapi",
+      {
+        method: "POST",
+        body: formData
+      }
+    );
   };
   const resetForm = () => {
 
     setCategory(initialProductState);
 
     setError("");
+  };
+
+  const handleImageChange = (e) => {
+    setProduct({
+      ...product,
+      image: e.target.files[0]
+    });
   };
 
 
@@ -52,8 +95,11 @@ function Create() {
       description="Create a new product to organize your products."
       breadcrumb="Dashboard / Product / Add product"
       product={product}
+      category={category}
+      productFeature={productFeature}
       error={error}
       handleChange={handleChange}
+      handleImageChange={handleImageChange}
       handleSubmit={handleSubmit}
       submitText="Save product"
       cancelAction={resetForm}

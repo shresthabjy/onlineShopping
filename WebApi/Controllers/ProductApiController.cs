@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +6,11 @@ using OnlineShopEdmx;
 using OnlineShopEdmx.Model;
 using OnlineShopping.Repository;
 using OnlineShopping.ViewModel;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 
 namespace WebApi.Controllers
@@ -20,7 +22,15 @@ namespace WebApi.Controllers
     {
         public GenericUnitOfWork _unitOfWork = new GenericUnitOfWork();
         private Populator populator = new Populator();
-       
+        private readonly IWebHostEnvironment hostingEnvo;
+
+
+        public ProductApiController(IWebHostEnvironment hostingEnvo)
+        {
+
+            this.hostingEnvo = hostingEnvo;
+        }
+
         [HttpGet]
             public async Task<ActionResult> Get()
 
@@ -35,6 +45,12 @@ namespace WebApi.Controllers
 
                            on p.CategoryId equals c.CategoryId
 
+                           join pf in _unitOfWork
+                               .GetRepositoryInstance<ProductFeatureDetail>()
+                               .GetAllRecordsIQueryable()
+
+                           on p.ProductFeatureId equals pf.ProductFeatureId
+
                            where p.IsDelete == false
 
                            select new
@@ -43,6 +59,7 @@ namespace WebApi.Controllers
                                p.ProductName,
                                p.CategoryId,
                                CategoryName = c.CategoryName,
+                               ProductFeature= pf.ProductFeatureName,
                                p.Quantity,
                                p.Price,
                                p.IsActive
@@ -55,37 +72,65 @@ namespace WebApi.Controllers
              return Ok(products.ToList());
         }
 
-        /// <summary>
-        /// Creates a TodoItem.
-        /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     POST /Todo
-        ///     {
-        ///        "id": 1,
-        ///        "name": "Item1",
-        ///        "isComplete": true
-        ///     }
-        ///
-        /// </remarks>
-        /// <param name="item"></param>
-        /// <returns>A newly created TodoItem</returns>
-        /// <response code="201">Returns the newly created item</response>
-        /// <response code="400">If the item is null</response>            
-        /// <response code="201">Returns the newly created item</response>
-        /// <response code="400">If the item is null</response>            
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<ProductDetail> Create(ProductDetail item)
+
+        [HttpPost]
+        public ActionResult<ProductDetail> Create( [FromForm] ProductViewModel model)
         {
+            ProductDetail item = new ProductDetail();
+
+            item.ProductName = model.ProductName;
+            item.CategoryId = model.CategoryId;
+            item.Quantity = model.Quantity;
+            item.Price = model.Price;
+            item.Description = model.Description;
+            item.IsActive = model.IsActive;
+            item.ProductFeatureId = model.ProductFeatureId;
+            item.CreatedDate = item.ModifiedDate = DateTime.Now;
+            item.IsDelete = false;
+
+            // image handling later
+            string uniqueFileName = null;
+
+            if (model.image != null)
+            {
+
+                string uploadsFolder =
+                    Path.Combine(
+                        hostingEnvo.WebRootPath,
+                        "productImages"
+                    );
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                uniqueFileName =
+                    Guid.NewGuid().ToString()
+                    + "_"
+                    + model.image.FileName;
+
+                string filePath =
+                    Path.Combine(
+                        uploadsFolder,
+                        uniqueFileName
+                    );
+
+                using (var stream = new FileStream(
+                    filePath,
+                    FileMode.Create))
+                {
+                    model.image.CopyTo(stream);
+                }
+            }
+            item.ProductImage = uniqueFileName;
             _unitOfWork.GetRepositoryInstance<ProductDetail>().Add(item);
 
             return Ok(item);
         }
-
-
+        
+        
         // PUT: api/TodoItems/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.

@@ -16,9 +16,9 @@ namespace OnlineShopping.Controllers
         public GenericUnitOfWork _unitOfWork = new GenericUnitOfWork();
         private Populator populator = new Populator();
 
-        private readonly IHostingEnvironment hostingEnvo;
+        private readonly IWebHostEnvironment hostingEnvo;
 
-        public ProductController(IHostingEnvironment hostingEnvo)
+        public ProductController(IWebHostEnvironment hostingEnvo)
         {
 
             this.hostingEnvo = hostingEnvo;

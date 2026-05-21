@@ -16,5 +16,9 @@
     <ProjectReference Include="..\OnlineShoppingStore\OnlineShopping.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\productImages\" />
+  </ItemGroup>
+
 
 </Project>

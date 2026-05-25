@@ -58,14 +58,14 @@ function Create() {
     e.preventDefault();
     
     const formData = new FormData();
-    formData.append("ProductName", product.ProductName);
-    formData.append("CategoryId", product.CategoryId);
-    formData.append("Quantity", product.Quantity);
-    formData.append("Price", product.Price);
-    formData.append("ProductFeatureId", product.ProductFeatureId);
-    formData.append("IsActive", product.IsActive);
-    formData.append("Description", product.Description);
-    formData.append("image", product.image);
+    formData.append("productName", product.productName);
+    formData.append("categoryId", product.categoryId);
+    formData.append("quantity", product.quantity);
+    formData.append("price", product.price);
+    formData.append("productFeatureId", product.productFeatureId);
+    formData.append("isActive", product.isActive);
+    formData.append("description", product.description);
+    formData.append("image", product.productImage);
     await fetch(
       "https://localhost:44317/api/productapi",
       {

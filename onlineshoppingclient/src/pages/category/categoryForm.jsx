@@ -13,15 +13,9 @@ function CategoryForm({
 }) {
 
   return (
-
-    <div className="flex-1 transition-all duration-300 bg-[#F3F5F7] px-3 h-full overflow-auto">
-
-      <div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] h-full p-6 shadow-sm flex flex-col items-center">
-
-        <div className="p-5 w-full">
-
-          <div className="flex-1 p-8 overflow-auto">
-
+    <div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] p-6 shadow-sm h-full  w-full overflow-auto">
+        <div className="flex justify-between items-start ">
+          <div className="flex-1 p-2 overflow-auto">
             {/* Breadcrumb */}
             <div
               className="
@@ -35,36 +29,19 @@ function CategoryForm({
             >
               {breadcrumb}
             </div>
-
             {/* Page Title */}
-            <div className="mb-8">
-
-              <h1 className="text-4xl font-bold text-gray-900">
-                {title}
-              </h1>
-
-              <p className="text-gray-500 mt-2">
-                {description}
-              </p>
-
-            </div>
 
             {/* Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
-
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 w-full overflow-auto">
               {/* Card Header */}
               <div className="border-b border-gray-200 px-8 py-6">
-
                 <h2 className="text-2xl font-semibold text-gray-800">
                   Category Information
                 </h2>
-
                 <p className="text-gray-500 mt-1">
                   Fill in the details below
                 </p>
-
               </div>
-
               {/* Card Body */}
               <div className="p-8">
 
@@ -155,23 +132,13 @@ function CategoryForm({
                     >
                       Cancel
                     </button>
-
                   </div>
-
                 </form>
-
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
-    </div>
   );
 }
-
 export default CategoryForm;

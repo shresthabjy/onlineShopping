@@ -16,32 +16,37 @@ function ProductForm({
 
   return (
 
-    <div className="flex-1 transition-all duration-300 bg-[#F3F5F7] px-3 h-full ">
-
-      <div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] h-full p-6 shadow-sm flex flex-col items-center ">
-        {/* Breadcrumb */}
-        <div
-          className="
+     <div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] p-6 shadow-sm h-full  w-full overflow-auto">
+        <div className="flex justify-between items-start ">
+          <div className="flex-1 p-2 overflow-auto">
+            {/* Breadcrumb */}
+            <div
+              className="
                 bg-gray-100
                 text-gray-700
                 px-3 py-3
                 rounded-lg
                 text-sm
                 mb-6
-                p-5 w-full
               "
-        >
-          {breadcrumb}
-        </div>
-        {/* Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-3 w-full overflow-auto">
-          {/* Page Title */}
-          <h2 className="text-4xl  text-gray-900">
-            {title}
-          </h2>
-          <br></br>
-          {/* Card Body */}
-          <div className="p-2">
+            >
+              {breadcrumb}
+            </div>
+            {/* Page Title */}
+
+            {/* Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 w-full overflow-auto">
+              {/* Card Header */}
+              <div className="border-b border-gray-200 px-8 py-6">
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  Category Information
+                </h2>
+                <p className="text-gray-500 mt-1">
+                  Fill in the details below
+                </p>
+              </div>
+              {/* Card Body */}
+              <div className="p-8">
 
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -52,8 +57,8 @@ function ProductForm({
                   </label>
                   <input
                     type="text"
-                    name="ProductName"
-                    value={product.ProductName}
+                    name="productName"
+                    value={product.productName || ""}
                     onChange={handleChange}
                     placeholder="Enter Product name"
                     className="
@@ -75,9 +80,9 @@ function ProductForm({
                     Category
                   </label>
                   <select
-                    name="CategoryId"
+                    name="categoryId"
                     className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                    value={product.CategoryId}
+                    value={product.categoryId || ""}
                     onChange={handleChange}
                   >
                     <option value="">Select Category</option>
@@ -105,8 +110,8 @@ function ProductForm({
 
                   <input
                     type="number"
-                    name="Quantity"
-                    value={product.Quantity}
+                    name="quantity"
+                    value={product.quantity || ""}
                     onChange={handleChange}
                     placeholder="Enter Product quantity"
                     className="
@@ -132,8 +137,8 @@ function ProductForm({
                   </label>
                   <input
                     type="number"
-                    name="Price"
-                    value={product.Price}
+                    name="price"
+                    value={product.price || ""}
                     onChange={handleChange}
                     placeholder="Enter Product price"
                     className="
@@ -159,9 +164,9 @@ function ProductForm({
                     Product Feature
                   </label>
                   <select
-                    name="ProductFeatureId"
+                    name="productFeatureId"
                     className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                    value={product.ProductFeatureId}
+                    value={product.productFeatureId || ""}
                     onChange={handleChange}
                   >
                     <option value="">Select Product Feature</option>
@@ -179,28 +184,30 @@ function ProductForm({
                 {/* Status */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-3">
-                    Status
-                  </label>
-                  <select
-                    className="
+                        Status
+                      </label>
+
+                      <select
+                        className="
                           w-full border border-gray-300 rounded-xl px-4 py-3
                           focus:outline-none focus:ring-2 focus:ring-blue-500
                           focus:border-blue-500 transition
                         "
-                    name="isActive"
-                    value={product.IsActive}
-                    onChange={(e) =>
-                      handleChange({
-                        target: {
-                          name: "isActive",
-                          value: e.target.value === "true"
+                        name="isActive"
+                        value={product.isActive}
+                        onChange={(e) =>
+                          handleChange({
+                            target: {
+                              name: "isActive",
+                              value: e.target.value === "true"
+                            }
+                          })
                         }
-                      })
-                    }
-                  >
-                    <option value="true">Active</option>
-                    <option value="false">Inactive</option>
-                  </select>
+                      >
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                      </select>
+
                 </div>
               </div>
 
@@ -220,7 +227,7 @@ function ProductForm({
                           focus:border-blue-500 transition
                         "
                     type="file"
-                    name="image"
+                    name="productImage"
                     onChange={handleImageChange}
                   />
                   {error && (
@@ -241,8 +248,8 @@ function ProductForm({
 
                 <textarea
                   type="text"
-                  name="Description"
-                  value={product.Description}
+                  name="description"
+                  value={product.description}
                   onChange={handleChange}
                   placeholder="Enter Product Description"
                   className="
@@ -286,6 +293,7 @@ function ProductForm({
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

@@ -10,6 +10,7 @@ function Category() {
   //for delete pop up 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [search, setSearch] = useState("");
   //  
   const navigate = useNavigate();
   const [category, setCategory] = useState([]);
@@ -21,14 +22,14 @@ function Category() {
   };
 
 
-//function for deleting
+  //function for deleting
   const handleDelete = async (id) => {
     await categoryService.delete(id);
     getCategory();
   };
-const getCategory = async () => {
-  setCategory(await categoryService.getAll());
-};
+  const getCategory = async () => {
+    setCategory(await categoryService.getAll());
+  };
   const columns = [
     {
       name: <span style={{ fontWeight: 'bold' }} className="font-bold text-lg ">Name</span>,
@@ -65,41 +66,52 @@ const getCategory = async () => {
         setCategory(data);
       });
   }, []);
+  const filteredProducts = category.filter((item) =>
+  item.categoryName
+    .toLowerCase()
+    .includes(search.toLowerCase())
+);
 
   return (
-    <div className="flex-1 bg-white rounded-md border border-gray-200 shadow-sm p-6 overflow-auto">
-      <div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] p-6 shadow-sm">
-        <div className="p-5 w-full ">
-          <div className="flex justify-between items-start ">
-
-            <div>
-              <h1 className="text-2xl font-bold mb-5">
-                Category List
-              </h1>
-            </div>
-
-            <div>
-              <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded" onClick={() => navigate("/category/create")}>
-                <Plus size={18} />
-                Add Category
-              </button>
-            </div>
-
+    <div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] p-6 shadow-sm h-full">
+      <div className="p-5 w-full ">
+        <div className="flex justify-between items-start ">
+          <div>
+            <h1 className="text-2xl font-bold mb-5">
+              Category List
+            </h1>
           </div>
-          <br></br>
-          <hr></hr>
-          <DataTable
-            columns={columns}
-            data={category}
-            pagination
-            paginationPerPage={5}
-            paginationRowsPerPageOptions={[5, 10, 20]}
-            highlightOnHover
-            pointerOnHover
-            striped
-          />
+          <div>
+            <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded" onClick={() => navigate("/category/create")}>
+              <Plus size={18} />
+              Add Category
+            </button>
+            
+          </div>
 
         </div>
+        <br></br>
+        <div className="mb-4 items-center">
+              <input
+                type="text"
+                placeholder="Search product..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="border p-2 rounded w-64"
+              />
+            </div>
+        <hr></hr>
+        <DataTable
+          columns={columns}
+          data={filteredProducts}
+          pagination
+          paginationPerPage={5}
+          paginationRowsPerPageOptions={[5, 10, 20]}
+          highlightOnHover
+          pointerOnHover
+          striped
+        />
+
       </div>
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">

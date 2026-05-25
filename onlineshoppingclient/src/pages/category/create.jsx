@@ -25,19 +25,78 @@ function Create() {
       navigate("/category");
 
     } catch (error) {
-      setError(error.message);
-      toast.error(error.message);
+
+      const apiErrors =
+        error.response?.data?.errors;
+
+      if (apiErrors) {
+
+        const firstErrorKey =
+          Object.keys(apiErrors)[0];
+
+        const firstErrorMessage =
+          apiErrors[firstErrorKey][0];
+
+        setError(firstErrorMessage);
+
+        toast.error(firstErrorMessage);
+
+      }
+      else if (typeof error.response?.data === "string") {
+
+        setError(error.response.data);
+
+        toast.error(error.response.data);
+
+      }
+      else {
+
+        setError("Unexpected error occurred");
+
+        toast.error("Unexpected error occurred");
+
+      }
     }
+
+
+
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (category.categoryName.trim().length < 3) {
-      setError("Category name must be at least 3 characters");
+    if (!category.categoryName.trim()) {
+
+      setError("Category name is required");
+
       return;
     }
+
+    if (category.categoryName.trim().length < 3) {
+
+      setError(
+        "Category name must be at least 3 characters"
+      );
+
+      return;
+    }
+
+    const nameRegex = /^[A-Za-z\s]+$/;
+
+    if (!nameRegex.test(category.categoryName)) {
+
+      setError(
+        "Category name can only contain letters"
+      );
+
+      return;
+    }
+
+
     setError("");
     await createCategory();
   };
+
+
+
   const resetForm = () => {
 
     setCategory(initialCategoryState);

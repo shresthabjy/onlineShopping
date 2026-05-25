@@ -15,12 +15,20 @@ namespace OnlineShopping.ViewModel
         public UserDetail dbModel { get; set; }
         public IEnumerable<PairModel> ddlIsActive { get; set; }
         public IEnumerable<IntStringPairModel> ddlCategory { get; set; }
-        public IEnumerable<IntStringPairModel> ddlProductFeature { get; set; }
-        public IFormFile image { get; set; }
-    }
 
+    }
+    public class LoginViewModel
+    {
+        public string Email { get; set; }
+
+        public string Password { get; set; }
+    }
     public class UserViewModelLst
     {
         public IEnumerable<UserDetail> dbModelLst { get; set; }
+        public string FullName { get; set; }
+        public string Email { get; set; }
+        public int id { get; set; }
+
     }
 }

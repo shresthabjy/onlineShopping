@@ -31,8 +31,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   ];
   return (
     <div 
-      className={`bg-white text-black transition-all duration-300 ease-in-out text-sm border-2 rounded-md border-[rgba(0,0,0,0.08)]
-        ${isOpen ? 'w-64' : 'w-16'}`}
+    className={`h-full bg-white text-black transition-all duration-300 ease-in-out text-sm border-2 rounded-md border-[rgba(0,0,0,0.08)]
+  ${isOpen ? 'w-64' : 'w-16'}`}
+ 
     >
       <div className="p-4 flex justify-between items-center">
         <h1 className={`font-bold overflow-hidden transition-all duration-300 text-lg text-nowrap text-[#3B40E8]

@@ -44,24 +44,7 @@ namespace OnlineShopping.Controllers
 
             });
         }
-        [HttpPost]
-        public ActionResult Create(UserViewModel tbl, IFormFile file)
-        {
-            string uniqueFileName = null;
-            if (tbl.image != null)
-            {
-                if (imageValidation(tbl.image.FileName) == true)
-                {
-                    string uploadsFolder = Path.Combine(hostingEnvo.WebRootPath, "UserImages");
-                    uniqueFileName = Guid.NewGuid().ToString() + "_" + tbl.image.FileName;
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    tbl.image.CopyTo(new FileStream(filePath, FileMode.Create));
-                }
-            }
-            tbl.dbModel.CreatedDate = tbl.dbModel.UpdatedDate = DateTime.Now;
-            _unitOfWork.GetRepositoryInstance<UserDetail>().Add(tbl.dbModel);
-            return RedirectToAction("Create");
-        }
+        
         public ActionResult Edit(int id)
         {
             return PartialView(new UserViewModel
@@ -72,47 +55,6 @@ namespace OnlineShopping.Controllers
             });
         }
 
-        [HttpPost]
-        public ActionResult Edit(UserViewModel tbl)
-        {
-            string uniqueFileName = null;
-            if (tbl.image != null)
-            {
-                if (imageValidation(tbl.image.FileName) == true)
-                {
-                    string uploadsFolder = Path.Combine(hostingEnvo.WebRootPath, "UserImages");
-                    uniqueFileName = Guid.NewGuid().ToString() + "_" + tbl.image.FileName;
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    tbl.image.CopyTo(new FileStream(filePath, FileMode.Create));
-                }
-            }
-            tbl.dbModel.UpdatedDate = DateTime.Now;
-            _unitOfWork.GetRepositoryInstance<UserDetail>().Update(tbl.dbModel);
-            return RedirectToAction("Index");
-        }
-        public bool imageValidation(String imageName = "null.doc")
-        {
-            string ext = System.IO.Path.GetExtension(imageName);
-            switch (ext)
-            {
-                case (".jpg"):
-                    return true;
-                    break;
-                case ".png":
-                    return true;
-                    break;
-                case ".gif":
-                    return true;
-                    break;
-                case ".jpeg":
-                    return true;
-                    break;
-                case null:
-                    return true;
-                    break;
-                default:
-                    return false;
-            }
-        }
+        
     }
 }

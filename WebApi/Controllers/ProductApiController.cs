@@ -62,7 +62,8 @@ namespace WebApi.Controllers
                                ProductFeature= pf.ProductFeatureName,
                                p.Quantity,
                                p.Price,
-                               p.IsActive
+                               p.IsActive, 
+                               p.ProductImage
                            };
 
             /*var result = await Task.FromResult(new ProductViewModelLst

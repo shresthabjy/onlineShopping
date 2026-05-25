@@ -14,7 +14,8 @@ namespace OnlineShopEdmx.Model
         public string FullName { get; set; }
         public string Address { get; set; }
         public string Email { get; set; }
-        public string MobileNumber { get; set; }
+        public string Password { get; set; }
+        public string MobileNumber { get; set; }    
         public Nullable<bool> IsActive { get; set; }
         public Nullable<bool> IsDelete { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }

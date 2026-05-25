@@ -1,5 +1,4 @@
 ﻿using Amazon.AWSSupport.Model;
-using Amazon.SimpleDB.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 
 namespace WebApi.Controllers
 {
@@ -35,56 +33,48 @@ namespace WebApi.Controllers
 
         }
 
-        /// <summary>
-        /// Creates a TodoItem.
-        /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     POST /Todo
-        ///     {
-        ///        "id": 1,
-        ///        "name": "Item1",
-        ///        "isComplete": true
-        ///     }
-        ///
-        /// </remarks>
-        /// <param name="item"></param>
-        /// <returns>A newly created TodoItem</returns>
-        /// <response code="201">Returns the newly created item</response>
-        /// <response code="400">If the item is null</response>            
-        /// <response code="201">Returns the newly created item</response>
-        /// <response code="400">If the item is null</response>            
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<CategoryDetail> Create(CategoryDetail item)
+        public ActionResult<CategoryDetail> Create(
+    CategoryDetail item
+)
         {
             var exists = _unitOfWork
-        .GetRepositoryInstance<CategoryDetail>()
-        .GetAllRecords()
-        .Any(x => x.CategoryName == item.CategoryName);
+                .GetRepositoryInstance<CategoryDetail>()
+                .GetAllRecords()
+                .Any(x =>
+                    x.CategoryName.ToLower()
+                    == item.CategoryName.ToLower()
+                    && x.IsDelete == false
+                );
+
             if (exists)
             {
-                return BadRequest("Category name already exists");
+                return BadRequest(
+                    "Category name already exists"
+                );
             }
 
-            if (item.CategoryName.Length < 3)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
-
 
             item.IsActive = true;
             item.IsDelete = false;
-            _unitOfWork.GetRepositoryInstance<CategoryDetail>().Add(item);
+
+            _unitOfWork
+                .GetRepositoryInstance<CategoryDetail>()
+                .Add(item);
+
             return Ok(item);
         }
 
 
         // PUT: api/TodoItems/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
-       
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItem(int id, CategoryDetail todoItem)
         {

@@ -14,11 +14,11 @@ import { Navigate } from "react-router-dom";
 
 
 function Login() {
-  const checkLogin = localStorage.getItem("user");
+  const checkLogin = localStorage.getItem("token");
 
-if (checkLogin) {
-  return <Navigate to="/" />;
-}
+  if (checkLogin) {
+    return <Navigate to="/" />;
+  }
   const [user, setUser] = useState(initialUserState);
   const [error, setError] = useState("");
   const handleChange = (e) => {
@@ -34,15 +34,20 @@ if (checkLogin) {
   const loginUser = async () => {
     try {
       const response = await userService.login(user);
+
       localStorage.setItem(
         "user",
         JSON.stringify(response)
       );
 
+      localStorage.setItem(
+        "token",
+        response.token
+      );
+
       toast.success("Login successfully");
 
       navigate("/");
-
     } catch (error) {
       setError(error.message);
       toast.error(error.message);

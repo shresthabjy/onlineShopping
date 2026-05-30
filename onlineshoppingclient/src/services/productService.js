@@ -11,13 +11,13 @@ export const productService = {
   create: (data) =>
     request(apiName, {
       method: "POST",
-      body: JSON.stringify(data)
+      body: data
     }),
 
   update: (id, data) =>
     request(`${apiName}/${id}`, {
       method: "PUT",
-      body: JSON.stringify(data)
+      body: data
     }),
 
   delete: (id) =>

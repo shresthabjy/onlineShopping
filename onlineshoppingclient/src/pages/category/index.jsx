@@ -59,13 +59,7 @@ function Category() {
     },
 
   ];
-  useEffect(() => {
-    fetch("https://localhost:44317/api/categoryapi")
-      .then(res => res.json())
-      .then(data => {
-        setCategory(data);
-      });
-  }, []);
+  useEffect(() => {getCategory();}, []);
   const filteredProducts = category.filter((item) =>
   item.categoryName
     .toLowerCase()
@@ -73,7 +67,7 @@ function Category() {
 );
 
   return (
-    <div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] p-6 shadow-sm h-full">
+    <div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] p-6 shadow-sm h-auto">
       <div className="p-5 w-full ">
         <div className="flex justify-between items-start ">
           <div>

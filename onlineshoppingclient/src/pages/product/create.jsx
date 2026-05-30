@@ -13,6 +13,7 @@ function Create() {
   const [category, setCategory] = useState([]);;
   const [productFeature, setProductFeature] = useState([]);;
   const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProduct((prev) => ({
@@ -54,41 +55,87 @@ function Create() {
       toast.error(error.message);
     }
   };
+const validateForm = () => {
+  const newErrors = {};
+
+  if (!product.productName?.trim()) {
+    newErrors.productName = "Product name is required";
+  }
+
+  if (!product.categoryId) {
+    newErrors.categoryId = "Please select category";
+  }
+
+  if (!product.quantity || Number(product.quantity) <= 0) {
+    newErrors.quantity = "Quantity must be greater than 0";
+  }
+
+  if (!product.price || Number(product.price) <= 0) {
+    newErrors.price = "Price must be greater than 0";
+  }
+
+  if (!product.productFeatureId) {
+    newErrors.productFeatureId =
+      "Please select product feature";
+  }
+
+  if (!product.description?.trim()) {
+    newErrors.description =
+      "Description is required";
+  }
+
+  return newErrors;
+};
+
+
+
+
   const handleSubmit = async (e) => {
+
     e.preventDefault();
-    
-    const formData = new FormData();
-    formData.append("productName", product.productName);
-    formData.append("categoryId", product.categoryId);
-    formData.append("quantity", product.quantity);
-    formData.append("price", product.price);
-    formData.append("productFeatureId", product.productFeatureId);
-    formData.append("isActive", product.isActive);
-    formData.append("description", product.description);
-    formData.append("image", product.productImage);
-    await fetch(
-      "https://localhost:44317/api/productapi",
-      {
-        method: "POST",
-        body: formData
+
+    const validationErrors =
+    validateForm();
+
+  if (
+    Object.keys(validationErrors).length > 0
+  ) {
+    setErrors(validationErrors);
+    return;
+  }
+
+  setErrors({});
+    try {
+      const formData = new FormData();
+      formData.append("productName", product.productName);
+      formData.append("categoryId", product.categoryId);
+      formData.append("quantity", product.quantity);
+      formData.append("price", product.price);
+      formData.append("productFeatureId", product.productFeatureId);
+      formData.append("isActive", product.isActive);
+      formData.append("description", product.description);
+      if (product.productImage) {
+        formData.append("productImage", product.productImage);
       }
-    );
+      await productService.create(formData);
+      toast.success("Product created successfully");
+      navigate("/product");
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
   };
   const resetForm = () => {
-
     setCategory(initialProductState);
-
     setError("");
   };
 
   const handleImageChange = (e) => {
     setProduct({
       ...product,
-      image: e.target.files[0]
+      productImage: e.target.files[0]
     });
   };
-
-
   return (
     <ProductForm
       title="Add New product"
@@ -97,7 +144,7 @@ function Create() {
       product={product}
       category={category}
       productFeature={productFeature}
-      error={error}
+      error={errors}
       handleChange={handleChange}
       handleImageChange={handleImageChange}
       handleSubmit={handleSubmit}

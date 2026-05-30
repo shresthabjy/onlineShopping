@@ -4,74 +4,97 @@ import { useNavigate } from "react-router-dom";
 import { initialCategoryState } from "./categoryModel";
 import CategoryForm from "./categoryForm";
 import { toast } from "react-toastify";
+import { categoryService } from "../../services/categoryService";
 
 function Edit() {
-  const navigate = useNavigate();
-  //getting id from edit button
-  const { id } = useParams();
-  //setting db attribute default 
-  const [category, setCategory] = useState(initialCategoryState);
 
-  //getting/saving data of category
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  const [category, setCategory] = useState(
+    initialCategoryState
+  );
+
+  const [error, setError] = useState("");
+
   useEffect(() => {
     fetchCategory();
   }, []);
-  const [error, setError] = useState("");
 
-  //getting data of category from api
   const fetchCategory = async () => {
-
-    const response = await fetch(
-      `https://localhost:44317/api/categoryapi/${id}`
-    );
-
-    const data = await response.json();
-
-    setCategory(data);
+    try {
+      const data =
+        await categoryService.getById(id);
+      setCategory(data);
+    } catch (err) {
+      setError(
+        "Failed to load category"
+      );
+    }
   };
 
-  //
   const handleChange = (e) => {
 
-    const { name, value, type, checked } = e.target;
+    const {
+      name,
+      value,
+      type,
+      checked
+    } = e.target;
+
     setCategory({
       ...category,
-      [name]: type === "checkbox" ? checked : value
+      [name]:
+        type === "checkbox"
+          ? checked
+          : value
     });
   };
 
   const handleSubmit = (e) => {
 
     e.preventDefault();
-    if (category.categoryName.trim().length < 3) {
-      setError("Category name must be at least 3 characters");
+
+    if (
+      category.categoryName
+        .trim()
+        .length < 3
+    ) {
+
+      setError(
+        "Category name must be at least 3 characters"
+      );
+
       return;
     }
+
     setError("");
+
     updateCategory();
   };
 
   const updateCategory = async () => {
-    const response = await fetch(
-      `https://localhost:44317/api/categoryapi/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(category)
-      }
-    );
 
-    if (!response.ok) {
+    try {
 
-      const errorMessage = await response.text();
+      await categoryService.update(
+        id,
+        category
+      );
 
-      setError(errorMessage);
-      return;
+      toast.success(
+        "Updated successfully"
+      );
+
+      navigate("/category");
+
+    } catch (err) {
+
+      setError(
+        "Failed to update category"
+      );
+
     }
-    toast.success("Updated successfully");
-    navigate("/category");
   };
 
   return (
@@ -84,8 +107,11 @@ function Edit() {
       handleChange={handleChange}
       handleSubmit={handleSubmit}
       submitText="Update Category"
-      cancelAction={() => navigate("/category")}
+      cancelAction={() =>
+        navigate("/category")
+      }
     />
   );
 }
+
 export default Edit;

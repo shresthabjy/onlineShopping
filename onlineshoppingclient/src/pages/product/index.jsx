@@ -19,7 +19,7 @@ function Product() {
   //function for deleting
   const handleDelete = async (id) => {
     await productService.delete(id);
-    getCategory();
+    getAllProductegory();
   };
 
   const getAllProductegory = async () => {
@@ -47,11 +47,42 @@ function Product() {
       sortable: true,
     },
     {
-      name: <span style={{ fontWeight: 'bold' }} className="font-bold text-lg">Active</span>,
-      //selector: row => row.isActive,
-      cell: row => row.isActive ? "Yes" : "No",
-
-      sortable: true,
+      name: <span style={{ fontWeight: 'bold' }} className="font-bold text-lg ">Image</span>,
+      
+   cell: (row) => (
+    row.productImage ? (
+      <img
+        src={`https://localhost:44317/productImages/${row.productImage}`}
+        alt={row.productName}
+        onError={(e) => {
+          e.target.style.display = "none";
+        }}
+        style={{
+          width: "80px",
+          height: "80px",
+          objectFit: "cover",
+          borderRadius: "5px",
+          border: "1px solid #ddd"
+        }}
+      />
+    ) : (
+      <div
+        style={{
+          width: "80px",
+          height: "80px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          border: "1px solid #ddd",
+          borderRadius: "8px",
+          fontSize: "12px",
+          color: "#666"
+        }}
+      >
+        No Image
+      </div>
+    )
+  )
     },
    
     {
@@ -69,16 +100,11 @@ function Product() {
     },
 
   ];
-  useEffect(() => {
-    fetch("https://localhost:44317/api/Productapi")
-      .then(res => res.json())
-      .then(data => {
-        setProduct(data);
-      });
-  }, []);
+    useEffect(() => {getAllProductegory();}, []);
+  
 
   return (
-<div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] p-6 shadow-sm h-full">
+<div className="bg-white border-2 rounded-md border-[rgba(0,0,0,0.08)] shadow-sm h-auto">
       <div className="p-5 w-full ">
         <div className="flex justify-between items-start ">
           <div>
@@ -120,9 +146,7 @@ function Product() {
             <p className="text-gray-500 mt-2">
               Are you sure you want to delete this product?
             </p>
-
             <div className="flex justify-end gap-3 mt-6">
-
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="px-5 py-2 rounded-xl border border-gray-300 

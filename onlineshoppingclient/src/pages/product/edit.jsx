@@ -54,29 +54,31 @@ function Edit() {
   };
 
   const updateProduct = async () => {
-    alert(product.productImage)
-    const response = await fetch(
-      `https://localhost:44317/api/productapi/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(product)
-      }
-    );
+  try {
 
-    if (!response.ok) {
+    const formData = new FormData();
 
-      const errorMessage = await response.text();
+    formData.append("productId", product.productId);
+    formData.append("productName", product.productName);
+    formData.append("categoryId", product.categoryId);
+    formData.append("quantity", product.quantity);
+    formData.append("price", product.price);
+    formData.append("productFeatureId", product.productFeatureId);
+    formData.append("isActive", product.isActive);
+    formData.append("description", product.description);
+    formData.append("productImage", product.productImage);
 
-      setError(errorMessage);
-      return;
-    }
+  
+
+    await productService.update(id, formData);
+
     toast.success("Updated successfully");
     navigate("/product");
-  };
 
+  } catch (err) {
+    setError("Failed to update product");
+  }
+};
 
 
   const resetForm = () => {
@@ -87,11 +89,11 @@ function Edit() {
   };
 
   const handleImageChange = (e) => {
-    setProduct({
-      ...product,
-      image: e.target.files[0]
-    });
-  };
+  setProduct({
+    ...product,
+    productImage: e.target.files[0]
+  });
+};
 
   //for edit
   //getting/saving data of category
@@ -102,12 +104,20 @@ function Edit() {
   //getting data of category from api
   const fetchProduct = async () => {
 
-    const response = await fetch(
-      `https://localhost:44317/api/productapi/${id}`
-    );
+    try {
 
-    const data = await response.json();
-    setProduct(data);
+      const data =
+        await productService.getById(id);
+
+      setProduct(data);
+
+    } catch (err) {
+
+      setError(
+        "Failed to load product"
+      );
+
+    }
   };
   return (
 
